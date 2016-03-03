@@ -1,0 +1,31 @@
+from calibre.web.feeds.news import BasicNewsRecipe
+
+class reduxOfficial(BasicNewsRecipe):
+    title = 'redux_official_document'
+    __author__ = ''
+    description = (''
+                   '')
+    timefmt = '[%Y-%m-%d]'
+    no_stylesheets = True
+    url_prefix = 'http://redux.js.org/docs/introduction/'
+    keep_only_tags = [{'class': 'chapter'},
+                      {'class': 'chapter done'},
+
+                      ]
+    remove_tags = [dict(name='section', attrs={'class': 'toc'}),
+                   dict(name='div', attrs={'class': 'prevnext'})]
+
+    def parse_index(self):
+        soup = self.index_to_soup(self.url_prefix + 'index.html')
+        toc = soup.find('ul', 'summary')
+        articles = [{'title': 'Introduction', 'url': self.url_prefix + 'index.html' }]
+        for li in toc.findAll('li'):
+            if 'chapter done' in li['class']:
+                continue
+
+            title = self.tag_to_string(tag)
+            url = self.url_prefix + tag.a['href']
+            article = {'title': title, 'url': url}
+            articles.append(article)
+        ans = [('learn_vimscript_the_hard_way', articles)]
+        return ans
