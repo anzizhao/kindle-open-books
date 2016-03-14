@@ -1,20 +1,32 @@
+# -*- coding: utf-8 -*-
 from calibre.web.feeds.news import BasicNewsRecipe
 from calibre.ebooks.BeautifulSoup import NavigableString
+from calibre.ebooks.BeautifulSoup import BeautifulSoup 
 
-class reduxOfficial(BasicNewsRecipe):
+# from calibre.rpdb import set_trace
+
+class es6StandardGetStart (BasicNewsRecipe):
     title = 'ECMAScript 6 入门'
     __author__ = '阮一峰'
     description = ('一峰新作'
                    '疯狂es6入门佳作')
+    delay = 2
     timefmt = '[%Y-%m-%d]'
     no_stylesheets = True
     cover_url = 'http://es6.ruanyifeng.com/images/cover-2nd.jpg'
     url_prefix = 'http://es6.ruanyifeng.com/'
     keep_only_tags = [{'id': 'content'},
                       ]
+    selector = 'div#content'
     remove_tags = [{'id': 'disqus_thread'},]
 
     def parse_index(self):
+        br = self.get_browser(self)
+        br.open(self.url_prefix + '#docs/intro')
+
+        print br.viewing_html()
+        BeautifulSoup( br.viewing_html())
+        
         soup = self.index_to_soup(self.url_prefix + '#docs/intro')
         print soup
         articles = []
