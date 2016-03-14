@@ -1,0 +1,26 @@
+from calibre.web.feeds.news import BasicNewsRecipe
+from calibre.ebooks.BeautifulSoup import NavigableString
+
+class reduxOfficial(BasicNewsRecipe):
+    title = 'es6 新特性概览'
+    __author__ = ''
+    description = (''
+                   '')
+    timefmt = '[%Y-%m-%d]'
+    no_stylesheets = True
+    url = 'http://www.cnblogs.com/Wayou/p/es6_new_features.html'
+
+    keep_only_tags = [{'id': 'cnblogs_post_body'},
+                      ]
+    def parse_index(self):
+        soup = self.index_to_soup(self.url )
+        soup.find('')
+        title = soup.find('a', id='cb_post_title_url')
+        
+        article = {'title': title.string, 'url': self.url}
+        articles = []
+        articles.append(article)
+
+        # print 'articles', articles
+        ans = [('es6 新特性概览', articles)]
+        return ans

@@ -1,4 +1,6 @@
 from calibre.web.feeds.news import BasicNewsRecipe
+from calibre.ebooks.BeautifulSoup import NavigableString
+
 class reduxOfficial(BasicNewsRecipe):
     title = 'redux_official_document'
     __author__ = ''
@@ -11,10 +13,21 @@ class reduxOfficial(BasicNewsRecipe):
                       ]
     def get_title(self, aTag):
         index = ''
-        if aTag.b:
-            index =  aTag.b.string 
+        content = ''
+        
+        for item in aTag.contents[1:len(aTag.contents)]:
+            # print type(item)
+            # print type(item) == NavigableString
+            if type(item) == NavigableString:
+                content += item.string
+                continue
+                
+            if item.name == 'b':
+                index =  aTag.b.string 
+                continue
 
-        return index + ' '+  aTag.contents[0].strip() 
+        # print content
+        return index + ' ' + content
 
     def generate_article(self, liTag):
         aTag = liTag.a
@@ -48,5 +61,6 @@ class reduxOfficial(BasicNewsRecipe):
 
                 fli  = fli.nextSibling.nextSibling
 
+        # print 'articles', articles
         ans = [('redux official', articles)]
         return ans
