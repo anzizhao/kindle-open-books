@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from calibre.web.feeds.news import BasicNewsRecipe
-from calibre.ebooks.BeautifulSoup import NavigableString
-from calibre.ebooks.BeautifulSoup import BeautifulSoup 
+from calibre.ebooks.BeautifulSoup import NavigableString, BeautifulSoup 
 
-from selenium import webdriver
 import codecs
 import time
+from selenium import webdriver
+
+# print time.__file__
+# print webdriver.__file__
 
 # from calibre.rpdb import set_trace
 
@@ -24,10 +26,14 @@ class es6StandardGetStart (BasicNewsRecipe):
     selector = 'div#content'
     remove_tag = [{'id': 'disqus_thread'},]
 
+    use_phantomjs_fetch_web = True 
+    phantomjs_page_time = 2
+
+
     def parse_index(self):
+
         cap = webdriver.DesiredCapabilities.PHANTOMJS
         cap["phantomjs.page.settings.resourceTimeout"] = 2000
-
         driver= webdriver.PhantomJS(desired_capabilities=cap)
         driver.get(self.url_prefix)
         # pdb.set_trace()
@@ -47,11 +53,11 @@ class es6StandardGetStart (BasicNewsRecipe):
             if type(item) == NavigableString or not item.a :
                 continue
 
-            print item
+            # print item
             title = item.a.string 
             url = self.url_prefix  + item.a["href"]
             article = {'title': title, 'url': url}
-            print url,article
+            # print url,article
             articles.append( article )
 
         # print 'articles', articles
