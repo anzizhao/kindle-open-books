@@ -3,6 +3,10 @@ from calibre.web.feeds.news import BasicNewsRecipe
 from calibre.ebooks.BeautifulSoup import NavigableString
 from calibre.ebooks.BeautifulSoup import BeautifulSoup 
 
+from selenium import webdriver
+import codecs
+import time
+
 # from calibre.rpdb import set_trace
 
 class es6StandardGetStart (BasicNewsRecipe):
@@ -10,7 +14,7 @@ class es6StandardGetStart (BasicNewsRecipe):
     __author__ = '阮一峰'
     description = ('一峰新作'
                    '疯狂es6入门佳作')
-    delay = 2
+    delay = 4
     timefmt = '[%Y-%m-%d]'
     no_stylesheets = True
     cover_url = 'http://es6.ruanyifeng.com/images/cover-2nd.jpg'
@@ -18,26 +22,37 @@ class es6StandardGetStart (BasicNewsRecipe):
     keep_only_tags = [{'id': 'content'},
                       ]
     selector = 'div#content'
-    remove_tags = [{'id': 'disqus_thread'},]
+    remove_tag = [{'id': 'disqus_thread'},]
 
     def parse_index(self):
-        br = self.get_browser(self)
-        br.open(self.url_prefix + '#docs/intro')
+        cap = webdriver.DesiredCapabilities.PHANTOMJS
+        cap["phantomjs.page.settings.resourceTimeout"] = 2000
 
-        print br.viewing_html()
-        BeautifulSoup( br.viewing_html())
+        driver= webdriver.PhantomJS(desired_capabilities=cap)
+        driver.get(self.url_prefix)
+        # pdb.set_trace()
+        # 原来在外面等也可以， so easy 
+        time.sleep(1)
+        content = driver.page_source
+        driver.quit()
+
+        soup = BeautifulSoup( content )
         
-        soup = self.index_to_soup(self.url_prefix + '#docs/intro')
-        print soup
+#        soup = self.index_to_soup(self.url_prefix + '#docs/intro')
+        # print soup
         articles = []
         titles = soup.find('div',{'id': 'sidebar'}).ol
-        print titles
+        # print titles
         for item in titles.contents: 
+            if type(item) == NavigableString or not item.a :
+                continue
+
+            print item
             title = item.a.string 
-            url = self.url_prefix  + item.a.href
+            url = self.url_prefix  + item.a["href"]
             article = {'title': title, 'url': url}
             print url,article
-            articles.push( article )
+            articles.append( article )
 
         # print 'articles', articles
         ans = [('ECMAScript 6 入门', articles)]
